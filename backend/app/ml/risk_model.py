@@ -71,7 +71,8 @@ class SimpleRiskModel:
         return min(max(round(score, 4), 0.0), 1.0)
 
     def predict_batch(self, features: List[RiskFeatures]) -> List[RiskPrediction]:
-        now = __import__("datetime").datetime.utcnow()
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc)
         return [
             RiskPrediction(
                 lat=f.lat,

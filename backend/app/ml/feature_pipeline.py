@@ -1,6 +1,6 @@
 import asyncio
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from sqlalchemy import text
@@ -109,7 +109,7 @@ async def _count_nearby_accidents(db: AsyncSession, lat: float, lng: float) -> i
 
 
 async def _count_recent_reports(db: AsyncSession, lat: float, lng: float) -> int:
-    cutoff = datetime.utcnow() - timedelta(hours=REPORTS_WINDOW_HOURS)
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=REPORTS_WINDOW_HOURS)
     row = await db.execute(
         text("""
             SELECT COUNT(*) AS cnt
@@ -123,7 +123,7 @@ async def _count_recent_reports(db: AsyncSession, lat: float, lng: float) -> int
 
 
 async def _count_nearby_events(db: AsyncSession, lat: float, lng: float) -> int:
-    cutoff = datetime.utcnow() - timedelta(hours=6)
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=6)
     row = await db.execute(
         text("""
             SELECT COUNT(*) AS cnt
@@ -141,7 +141,7 @@ async def build_inference_features(
     lat: float,
     lng: float,
 ) -> RiskFeatures:
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     weather_task = db.execute(
         text("""
             SELECT rain_mm, temperature_c, humidity
