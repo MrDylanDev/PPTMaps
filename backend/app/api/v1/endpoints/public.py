@@ -4,7 +4,7 @@ Leen exclusivamente de las tablas reales (alerts, reports, flood_hazards, weathe
 No incluyen datos de fallback embebidos: si no hay datos, devuelven colecciones vacías.
 """
 import json
-from datetime import date
+from datetime import date, datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -688,7 +688,7 @@ async def accident_risk_point(
         "risk_score": score,
         "comuna": None,
         "model": "climate-risk-v1",
-        "generated_at": datetime.utcnow().isoformat(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
 
@@ -700,7 +700,6 @@ async def accident_risk_heatmap(
     import json
     from app.ml.feature_pipeline import RiskFeatures, build_inference_features
     from app.ml.risk_model import SimpleRiskModel
-    from datetime import datetime
     from sqlalchemy import text as sql_text
 
     try:
@@ -749,7 +748,7 @@ async def accident_risk_heatmap(
     result = {
         "points": points,
         "model": "climate-risk-v1",
-        "generated_at": datetime.utcnow().isoformat(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
     try:
