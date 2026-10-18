@@ -7,7 +7,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger(__name__)
 
-_DEV_SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 _DEV_TELEMETRY_KEY = "dev-telemetry-key-change-me"
 _DEV_DB_PASSWORD = "postgres"
 
@@ -29,11 +28,6 @@ class Settings(BaseSettings):
 
     # Redis y Celery
     REDIS_URL: str = "redis://localhost:6379/0"
-
-    # Seguridad JWT
-    SECRET_KEY: str = Field(default=_DEV_SECRET_KEY, repr=False)
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
 
     # API key para ingesta de telemetría (dispositivos GPS = máquinas, no users)
     TELEMETRY_API_KEY: str = Field(default=_DEV_TELEMETRY_KEY, repr=False)
@@ -65,7 +59,6 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
     def model_post_init(self, __context) -> None:
-        _warn_if_default("SECRET_KEY", self.SECRET_KEY, _DEV_SECRET_KEY, "JWT")
         _warn_if_default("TELEMETRY_API_KEY", self.TELEMETRY_API_KEY, _DEV_TELEMETRY_KEY, "API de telemetría")
         _warn_if_default("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD, _DEV_DB_PASSWORD, "base de datos")
 
